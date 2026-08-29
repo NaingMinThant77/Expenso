@@ -6,6 +6,7 @@ export type TransactionFilters = {
   type?: CategoryType | "ALL";
   categoryId?: string | "ALL";
   take?: number;
+  skip?: number;
 };
 
 export type SerializedTransaction = Omit<Transaction, "amount"> & {
@@ -13,10 +14,10 @@ export type SerializedTransaction = Omit<Transaction, "amount"> & {
   category: Category;
 };
 
-export async function getTransactionsForUser(
+function buildTransactionWhere(
   userId: string,
-  filters: TransactionFilters
-): Promise<SerializedTransaction[]> {
+  filters: Pick<TransactionFilters, "q" | "type" | "categoryId">
+): Prisma.TransactionWhereInput {
   const where: Prisma.TransactionWhereInput = { userId };
 
   if (filters.type && filters.type !== "ALL") {
@@ -32,14 +33,32 @@ export async function getTransactionsForUser(
     ];
   }
 
+  return where;
+}
+
+export async function getTransactionsForUser(
+  userId: string,
+  filters: TransactionFilters
+): Promise<SerializedTransaction[]> {
+  const where = buildTransactionWhere(userId, filters);
+
   const rows = await prisma.transaction.findMany({
     where,
     include: { category: true },
     orderBy: { date: "desc" },
     ...(filters.take ? { take: filters.take } : {}),
+    ...(filters.skip ? { skip: filters.skip } : {}),
   });
 
   // Prisma's Decimal instances can't cross the Server -> Client Component
   // boundary, so convert to plain numbers here at the data layer.
   return rows.map((row) => ({ ...row, amount: Number(row.amount) }));
+}
+
+export async function countTransactionsForUser(
+  userId: string,
+  filters: Pick<TransactionFilters, "q" | "type" | "categoryId">
+): Promise<number> {
+  const where = buildTransactionWhere(userId, filters);
+  return prisma.transaction.count({ where });
 }

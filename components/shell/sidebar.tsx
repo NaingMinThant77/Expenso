@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
-import { Wallet, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { NAV_ITEMS } from "./nav-items";
-import { UserMenu } from "./user-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
 type Props = {
   username: string;
@@ -21,10 +21,17 @@ export function Sidebar({ username, email, image, onAddTransaction }: Props) {
 
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-card px-3 py-4 md:flex">
-      <div className="my-4 ml-1 flex items-center gap-2 px-1.5">
-        <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <Wallet className="size-4" />
-        </span>
+      <div className="my-4 ml-1 flex items-center justify-start gap-2.5 px-1.5">
+        <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/10 p-1.5 ring-1 ring-primary/15">
+          <Image
+            src="/icons/icon-512.png"
+            alt="Expenso Logo"
+            width={512}
+            height={512}
+            className="h-full w-full object-contain"
+            priority
+          />
+        </div>
         <span className="text-lg font-semibold tracking-tight">Expenso</span>
       </div>
 

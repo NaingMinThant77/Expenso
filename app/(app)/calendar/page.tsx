@@ -47,36 +47,34 @@ export default async function CalendarPage({ searchParams }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
+      <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           <CalendarDays className="size-4" />
           Daily income &amp; expense calendar
         </div>
+        <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 text-sm">
+          <span className="text-muted-foreground">Previous month :</span>
+          <span
+            className={cn(
+              "font-semibold",
+              previousBalance >= 0
+                ? "text-emerald-600 dark:text-emerald-400"
+                : "text-rose-600 dark:text-rose-400",
+            )}
+          >
+            {formatCurrency(previousBalance)}
+          </span>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <MonthNav
             year={year}
             month={month}
             monthIncome={monthIncome}
             monthExpense={monthExpense}
           />
-          <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm">
-            <span className="text-muted-foreground">
-              Previous month balance
-            </span>
-            <span
-              className={cn(
-                "font-semibold",
-                previousBalance >= 0
-                  ? "text-emerald-600 dark:text-emerald-400"
-                  : "text-rose-600 dark:text-rose-400",
-              )}
-            >
-              {formatCurrency(previousBalance)}
-            </span>
-          </div>
         </div>
 
         <CalendarGrid

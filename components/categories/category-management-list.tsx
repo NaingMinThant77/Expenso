@@ -75,7 +75,7 @@ export function CategoryManagementList({ categories }: Props) {
               <p className="truncate text-sm font-medium">{category.name}</p>
             </div>
             <Badge
-              variant={category.type === "INCOME" ? "default" : "secondary"}
+              variant={category.type === "INCOME" ? "default" : "destructive"}
             >
               {category.type === "INCOME" ? "Income" : "Expense"}
             </Badge>

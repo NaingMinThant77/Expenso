@@ -11,8 +11,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { TransactionDialog } from "./transaction-dialog";
+import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { getIcon } from "@/lib/icon-map";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -27,12 +38,13 @@ type Props = {
 
 export function TransactionListItem({ transaction, categories }: Props) {
   const [editOpen, setEditOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const Icon = getIcon(transaction.category.icon);
   const isExpense = transaction.type === "EXPENSE";
 
-  function handleDelete() {
-    if (!window.confirm("Delete this transaction?")) return;
+  function confirmDelete() {
     startTransition(async () => {
       const result = await deleteTransaction(transaction.id);
       if (result?.error) {
@@ -49,38 +61,64 @@ export function TransactionListItem({ transaction, categories }: Props) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -8 }}
-      className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2.5"
+      className="flex items-start gap-3 rounded-xl border border-border bg-card px-3 py-3 transition-colors hover:bg-muted/40"
     >
-      <span
-        className="flex size-10 shrink-0 items-center justify-center rounded-full"
-        style={{ backgroundColor: `${transaction.category.color}1a`, color: transaction.category.color }}
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => setDetailOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setDetailOpen(true);
+          }
+        }}
+        className="flex min-w-0 flex-1 cursor-pointer items-start gap-3"
       >
-        <Icon className="size-4.5" />
-      </span>
+        <span
+          className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-full"
+          style={{
+            backgroundColor: `${transaction.category.color}1a`,
+            color: transaction.category.color,
+            boxShadow: `inset 0 0 0 1px ${transaction.category.color}33`,
+          }}
+        >
+          <Icon className="size-5" />
+        </span>
 
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">
-          {transaction.shop || transaction.category.name}
-        </p>
-        <p className="truncate text-xs text-muted-foreground">
-          {transaction.category.name} · {format(transaction.date, "MMM d, yyyy")}
-          {transaction.memo ? ` · ${transaction.memo}` : ""}
+        <div className="min-w-0 flex-1 pt-0.5">
+          <p className="truncate text-sm font-semibold text-foreground">
+            {transaction.shop || transaction.category.name}
+          </p>
+          <p className="truncate text-xs text-muted-foreground">
+            {transaction.category.name} · {format(transaction.date, "MMM d, yyyy")}
+          </p>
+          {transaction.memo && (
+            <p
+              className="mt-1 line-clamp-2 text-xs text-muted-foreground/80 italic"
+              title={transaction.memo}
+            >
+              {transaction.memo}
+            </p>
+          )}
+        </div>
+
+        <p
+          className={cn(
+            "mt-0.5 shrink-0 rounded-full px-2.5 py-1 text-sm font-bold tabular-nums whitespace-nowrap",
+            isExpense
+              ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+              : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+          )}
+        >
+          {isExpense ? "-" : "+"}
+          {formatCurrency(Number(transaction.amount))}
         </p>
       </div>
 
-      <p
-        className={cn(
-          "shrink-0 text-sm font-semibold",
-          isExpense ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"
-        )}
-      >
-        {isExpense ? "-" : "+"}
-        {formatCurrency(Number(transaction.amount))}
-      </p>
-
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon-sm" disabled={isPending}>
+          <Button variant="ghost" size="icon-sm" disabled={isPending} className="mt-0.5">
             <MoreVertical className="size-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -89,7 +127,7 @@ export function TransactionListItem({ transaction, categories }: Props) {
             <Pencil className="size-4" />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem variant="destructive" onSelect={handleDelete}>
+          <DropdownMenuItem variant="destructive" onSelect={() => setDeleteConfirmOpen(true)}>
             <Trash2 className="size-4" />
             Delete
           </DropdownMenuItem>
@@ -111,6 +149,39 @@ export function TransactionListItem({ transaction, categories }: Props) {
         open={editOpen}
         onOpenChange={setEditOpen}
       />
+
+      <TransactionDetailDialog
+        transaction={transaction}
+        icon={Icon}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        onEdit={() => setEditOpen(true)}
+        onDelete={() => setDeleteConfirmOpen(true)}
+        isPending={isPending}
+      />
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this transaction?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete{" "}
+              {transaction.shop || `this ${transaction.category.name.toLowerCase()} entry`}. This
+              action can&apos;t be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isPending}
+              onClick={confirmDelete}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 }

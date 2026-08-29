@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/context/theme-context";
 import { Toaster } from "@/components/ui/sonner";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
+import { DevServiceWorkerCleanup } from "@/components/pwa/dev-sw-cleanup";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Expenso",
+  title: "Expenso - Track your income and expenses",
   description: "Track your income and expenses",
   appleWebApp: {
     capable: true,
@@ -55,6 +57,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           {children}
           <Toaster />
+          <InstallPrompt />
+          <DevServiceWorkerCleanup />
         </ThemeProvider>
       </body>
     </html>

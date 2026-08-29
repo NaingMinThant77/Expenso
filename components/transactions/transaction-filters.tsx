@@ -42,6 +42,7 @@ export function TransactionFilters({ categories }: Props) {
     } else {
       params.set(key, value);
     }
+    params.delete("page");
     const qs = params.toString();
     // A bare trailing "?" (empty query string) gets silently dropped by
     // the router instead of clearing params, so omit it entirely here.

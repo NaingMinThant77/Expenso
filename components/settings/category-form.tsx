@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ICON_MAP, ICON_KEYS } from "@/lib/icon-map";
+import { ICON_MAP, ICON_KEYS, type IconKey } from "@/lib/icon-map";
 import { categorySchema, type CategoryInput } from "@/lib/validations/category";
 import { createCategory, updateCategory } from "@/lib/actions/categories";
 import type { Category } from "@prisma/client";
@@ -43,6 +43,10 @@ type Props = {
   onOpenChange?: (open: boolean) => void;
 };
 
+function toIconKey(icon: string): IconKey {
+  return (ICON_KEYS as readonly string[]).includes(icon) ? (icon as IconKey) : ICON_KEYS[0];
+}
+
 export function CategoryForm({ category, trigger, open, onOpenChange }: Props) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = open !== undefined;
@@ -60,7 +64,12 @@ export function CategoryForm({ category, trigger, open, onOpenChange }: Props) {
   } = useForm<CategoryInput>({
     resolver: zodResolver(categorySchema),
     defaultValues: category
-      ? { name: category.name, type: category.type, icon: category.icon, color: category.color }
+      ? {
+          name: category.name,
+          type: category.type,
+          icon: toIconKey(category.icon),
+          color: category.color,
+        }
       : { name: "", type: "EXPENSE", icon: ICON_KEYS[0], color: PRESET_COLORS[0] },
   });
 
@@ -68,7 +77,12 @@ export function CategoryForm({ category, trigger, open, onOpenChange }: Props) {
     if (isOpen) {
       reset(
         category
-          ? { name: category.name, type: category.type, icon: category.icon, color: category.color }
+          ? {
+          name: category.name,
+          type: category.type,
+          icon: toIconKey(category.icon),
+          color: category.color,
+        }
           : { name: "", type: "EXPENSE", icon: ICON_KEYS[0], color: PRESET_COLORS[0] }
       );
     }
