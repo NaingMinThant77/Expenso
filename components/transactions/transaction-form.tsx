@@ -85,9 +85,18 @@ export function TransactionForm({ categories, transaction, defaultDate, onSucces
 
   function onSubmit(values: TransactionInput) {
     startTransition(async () => {
+      // Store the calendar day the user picked (in their local timezone) as a
+      // timezone-agnostic UTC-midnight instant, so server-side day bucketing
+      // (which reads with getUTC*) always lands on the same day.
+      const normalized = {
+        ...values,
+        date: new Date(
+          Date.UTC(values.date.getFullYear(), values.date.getMonth(), values.date.getDate())
+        ),
+      };
       const result = transaction
-        ? await updateTransaction(transaction.id, values)
-        : await createTransaction(values);
+        ? await updateTransaction(transaction.id, normalized)
+        : await createTransaction(normalized);
 
       if (result?.error) {
         toast.error(

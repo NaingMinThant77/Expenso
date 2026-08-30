@@ -10,8 +10,8 @@ export type CategorySlice = {
 };
 
 function monthRange(year: number, month: number) {
-  const start = new Date(year, month - 1, 1);
-  const end = new Date(year, month, 1);
+  const start = new Date(Date.UTC(year, month - 1, 1));
+  const end = new Date(Date.UTC(year, month, 1));
   return { start, end };
 }
 
@@ -67,8 +67,8 @@ export async function getIncomeExpenseTrend(
   const points: MonthlyTrendPoint[] = [];
 
   for (let i = monthsBack - 1; i >= 0; i--) {
-    const d = new Date(year, month - 1 - i, 1);
-    const { start, end } = monthRange(d.getFullYear(), d.getMonth() + 1);
+    const d = new Date(Date.UTC(year, month - 1 - i, 1));
+    const { start, end } = monthRange(d.getUTCFullYear(), d.getUTCMonth() + 1);
 
     const rows = await prisma.transaction.groupBy({
       by: ["type"],
@@ -77,7 +77,7 @@ export async function getIncomeExpenseTrend(
     });
 
     points.push({
-      label: d.toLocaleDateString("en-US", { month: "short" }),
+      label: d.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" }),
       income: Number(rows.find((r) => r.type === "INCOME")?._sum.amount ?? 0),
       expense: Number(rows.find((r) => r.type === "EXPENSE")?._sum.amount ?? 0),
     });

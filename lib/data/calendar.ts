@@ -12,8 +12,8 @@ export type CalendarDay = {
 };
 
 function monthRange(year: number, month: number) {
-  const start = new Date(year, month - 1, 1);
-  const end = new Date(year, month, 1);
+  const start = new Date(Date.UTC(year, month - 1, 1));
+  const end = new Date(Date.UTC(year, month, 1));
   return { start, end };
 }
 
@@ -30,9 +30,9 @@ export async function getMonthCalendarData(
     orderBy: { createdAt: "desc" },
   });
 
-  const daysInMonth = new Date(year, month, 0).getDate();
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const days: CalendarDay[] = Array.from({ length: daysInMonth }, (_, i) => ({
-    date: new Date(year, month - 1, i + 1),
+    date: new Date(Date.UTC(year, month - 1, i + 1)),
     day: i + 1,
     income: 0,
     expense: 0,
@@ -42,7 +42,7 @@ export async function getMonthCalendarData(
   }));
 
   for (const t of transactions) {
-    const day = days[t.date.getDate() - 1];
+    const day = days[t.date.getUTCDate() - 1];
     if (!day) continue;
     const amount = Number(t.amount);
     day.transactions.push({ ...t, amount });

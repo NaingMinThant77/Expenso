@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { getTransactionsForUser, countTransactionsForUser } from "@/lib/data/transactions";
+import {
+  getTransactionsForUser,
+  countTransactionsForUser,
+} from "@/lib/data/transactions";
 import { getCategoriesForUser } from "@/lib/data/categories";
 import { TransactionFilters } from "@/components/transactions/transaction-filters";
 import { TransactionList } from "@/components/transactions/transaction-list";
@@ -8,7 +11,12 @@ import { TransactionPagination } from "@/components/transactions/transaction-pag
 import { TRANSACTIONS_PAGE_SIZE as PAGE_SIZE } from "@/lib/constants";
 
 type Props = {
-  searchParams: Promise<{ q?: string; type?: string; category?: string; page?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    type?: string;
+    category?: string;
+    page?: string;
+  }>;
 };
 
 export default async function TransactionsPage({ searchParams }: Props) {
