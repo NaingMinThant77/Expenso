@@ -27,7 +27,7 @@ import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { getIcon } from "@/lib/icon-map";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { deleteTransaction } from "@/lib/actions/transactions";
+import { useOffline } from "@/context/offline-context";
 import type { Category } from "@prisma/client";
 import type { SerializedTransaction } from "@/lib/data/transactions";
 
@@ -41,6 +41,7 @@ export function TransactionListItem({ transaction, categories }: Props) {
   const [detailOpen, setDetailOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const { deleteTransaction } = useOffline();
   const Icon = getIcon(transaction.category.icon);
   const isExpense = transaction.type === "EXPENSE";
 

@@ -23,7 +23,7 @@ import {
 import { cn } from "@/lib/utils";
 import { getIcon } from "@/lib/icon-map";
 import { transactionSchema, type TransactionInput } from "@/lib/validations/transaction";
-import { createTransaction, updateTransaction } from "@/lib/actions/transactions";
+import { useOffline } from "@/context/offline-context";
 import type { Category } from "@prisma/client";
 
 type Props = {
@@ -44,6 +44,7 @@ type Props = {
 
 export function TransactionForm({ categories, transaction, defaultDate, onSuccess }: Props) {
   const [isPending, startTransition] = useTransition();
+  const { createTransaction, updateTransaction } = useOffline();
 
   const {
     control,

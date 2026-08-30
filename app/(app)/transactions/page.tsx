@@ -5,8 +5,7 @@ import { getCategoriesForUser } from "@/lib/data/categories";
 import { TransactionFilters } from "@/components/transactions/transaction-filters";
 import { TransactionList } from "@/components/transactions/transaction-list";
 import { TransactionPagination } from "@/components/transactions/transaction-pagination";
-
-const PAGE_SIZE = 15;
+import { TRANSACTIONS_PAGE_SIZE as PAGE_SIZE } from "@/lib/constants";
 
 type Props = {
   searchParams: Promise<{ q?: string; type?: string; category?: string; page?: string }>;

@@ -5,7 +5,11 @@ const withPWA = withPWAInit({
   dest: "public",
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
+  // The offline sync engine (context/offline-context.tsx) owns the
+  // reconnect experience (flush the outbox, then router.refresh()) —
+  // a forced full-page reload here would wipe its in-memory state and
+  // race its own `online` listener.
+  reloadOnOnline: false,
   disable: process.env.NODE_ENV === "development",
 });
 

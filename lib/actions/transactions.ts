@@ -14,18 +14,19 @@ export async function createTransaction(input: unknown) {
 
   const { shop, memo, ...rest } = parsed.data;
 
-  await prisma.transaction.create({
+  const row = await prisma.transaction.create({
     data: {
       ...rest,
       userId: session.user.id,
       shop: shop || null,
       memo: memo || null,
     },
+    include: { category: true },
   });
 
   revalidatePath("/");
   revalidatePath("/transactions");
-  return { success: true };
+  return { success: true, data: { ...row, amount: Number(row.amount) } };
 }
 
 export async function updateTransaction(id: string, input: unknown) {
@@ -39,21 +40,22 @@ export async function updateTransaction(id: string, input: unknown) {
 
   const existing = await prisma.transaction.findUnique({ where: { id } });
   if (!existing || existing.userId !== session.user.id) {
-    return { error: "Transaction not found" };
+    return { error: "Transaction not found", code: "NOT_FOUND" as const };
   }
 
-  await prisma.transaction.update({
+  const row = await prisma.transaction.update({
     where: { id },
     data: {
       ...rest,
       shop: shop || null,
       memo: memo || null,
     },
+    include: { category: true },
   });
 
   revalidatePath("/");
   revalidatePath("/transactions");
-  return { success: true };
+  return { success: true, data: { ...row, amount: Number(row.amount) } };
 }
 
 export async function deleteTransaction(id: string) {
@@ -62,7 +64,7 @@ export async function deleteTransaction(id: string) {
 
   const existing = await prisma.transaction.findUnique({ where: { id } });
   if (!existing || existing.userId !== session.user.id) {
-    return { error: "Transaction not found" };
+    return { error: "Transaction not found", code: "NOT_FOUND" as const };
   }
 
   await prisma.transaction.delete({ where: { id } });

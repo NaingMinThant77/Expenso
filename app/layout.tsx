@@ -33,6 +33,27 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// iOS ignores the manifest's icons/background_color for the install splash,
+// so each supported device size needs its own generated image + media query.
+// Regenerate with `node scripts/generate-splash.mjs` if the icon or title change.
+const APPLE_SPLASH_SCREENS = [
+  { width: 320, height: 568, ratio: 2 },
+  { width: 375, height: 667, ratio: 2 },
+  { width: 414, height: 896, ratio: 2 },
+  { width: 375, height: 812, ratio: 3 },
+  { width: 390, height: 844, ratio: 3 },
+  { width: 393, height: 852, ratio: 3 },
+  { width: 414, height: 736, ratio: 3 },
+  { width: 414, height: 896, ratio: 3 },
+  { width: 428, height: 926, ratio: 3 },
+  { width: 430, height: 932, ratio: 3 },
+  { width: 768, height: 1024, ratio: 2 },
+  { width: 810, height: 1080, ratio: 2 },
+  { width: 834, height: 1112, ratio: 2 },
+  { width: 834, height: 1194, ratio: 2 },
+  { width: 1024, height: 1366, ratio: 2 },
+] as const;
+
 const NO_FOUC_SCRIPT = `
 (function () {
   try {
@@ -52,6 +73,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: NO_FOUC_SCRIPT }} />
+        {APPLE_SPLASH_SCREENS.map(({ width, height, ratio }) => (
+          <link
+            key={`${width}x${height}@${ratio}`}
+            rel="apple-touch-startup-image"
+            href={`/splash/apple-splash-${width * ratio}-${height * ratio}.png`}
+            media={`(device-width: ${width}px) and (device-height: ${height}px) and (-webkit-device-pixel-ratio: ${ratio}) and (orientation: portrait)`}
+          />
+        ))}
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>

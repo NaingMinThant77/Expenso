@@ -37,7 +37,7 @@ export default async function DashboardPage() {
             <Link href="/transactions">View all</Link>
           </Button>
         </div>
-        <TransactionList transactions={recentTransactions} categories={categories} />
+        <TransactionList transactions={recentTransactions} categories={categories} limit={5} />
       </div>
     </div>
   );
