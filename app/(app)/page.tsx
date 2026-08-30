@@ -17,27 +17,35 @@ export default async function DashboardPage() {
 
   const [summary, recentTransactions, categories] = await Promise.all([
     getDashboardSummary(userId),
-    getTransactionsForUser(userId, { take: 5 }),
+    getTransactionsForUser(userId, { take: 3 }),
     getCategoriesForUser(userId),
   ]);
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <p className="text-sm text-muted-foreground">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
+        <p className="text-sm text-muted-foreground">
+          {format(new Date(), "EEEE, MMMM d, yyyy")}
+        </p>
         <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
       </div>
 
       <SummaryCards {...summary} />
 
       <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-muted-foreground">Recent transactions</h2>
-          <Button variant="ghost" size="sm" asChild>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="min-w-0 truncate text-sm font-medium text-muted-foreground">
+            Recent transactions
+          </h2>
+          <Button variant="ghost" size="sm" className="shrink-0" asChild>
             <Link href="/transactions">View all</Link>
           </Button>
         </div>
-        <TransactionList transactions={recentTransactions} categories={categories} limit={5} />
+        <TransactionList
+          transactions={recentTransactions}
+          categories={categories}
+          limit={3}
+        />
       </div>
     </div>
   );

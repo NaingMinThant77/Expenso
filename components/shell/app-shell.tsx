@@ -31,9 +31,9 @@ export function AppShell({ userId, username, email, image, categories, children 
           onAddTransaction={() => setAddOpen(true)}
         />
 
-        <div className="flex flex-1 flex-col">
-          <main className="flex-1 px-4 pb-24 pt-6 md:px-8 md:pb-10">
-            <div className="mx-auto w-full max-w-4xl">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <main className="min-w-0 flex-1 px-4 pb-24 pt-6 md:px-8 md:pb-10">
+            <div className="mx-auto w-full min-w-0 max-w-4xl">
               <PageTransition>{children}</PageTransition>
             </div>
           </main>

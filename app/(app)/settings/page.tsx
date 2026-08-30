@@ -74,7 +74,9 @@ export default async function SettingsPage() {
               </p>
             </div>
           </div>
-          <LogoutButton />
+          <div className="self-end sm:self-auto">
+            <LogoutButton />
+          </div>
         </CardContent>
       </Card>
     </div>

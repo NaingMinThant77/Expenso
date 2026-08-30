@@ -1,7 +1,13 @@
 "use client";
 
 import { format } from "date-fns";
-import { Banknote, Landmark, Pencil, Trash2, type LucideIcon } from "lucide-react";
+import {
+  Banknote,
+  Landmark,
+  Pencil,
+  Trash2,
+  type LucideIcon,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -60,7 +66,7 @@ export function TransactionDetailDialog({
                 "inline-flex rounded-full px-3 py-1 text-base font-bold tabular-nums",
                 isExpense
                   ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-                  : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
               )}
             >
               {isExpense ? "-" : "+"}
@@ -76,7 +82,9 @@ export function TransactionDetailDialog({
           </div>
           <div className="flex items-center justify-between gap-3">
             <span className="text-muted-foreground">Date</span>
-            <span className="font-medium">{format(transaction.date, "PPP")}</span>
+            <span className="font-medium">
+              {format(transaction.date, "PPP")}
+            </span>
           </div>
           <div className="flex items-center justify-between gap-3">
             <span className="text-muted-foreground">Method</span>
@@ -95,7 +103,9 @@ export function TransactionDetailDialog({
 
         {transaction.memo && (
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-muted-foreground">Memo</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              Memo
+            </span>
             <p className="max-h-40 overflow-y-auto rounded-2xl border border-border bg-muted/30 p-3 text-sm whitespace-pre-wrap wrap-break-word">
               {transaction.memo}
             </p>
@@ -105,7 +115,7 @@ export function TransactionDetailDialog({
         <DialogFooter>
           <Button
             variant="outline"
-            className="flex-1"
+            className="h-11 flex-1 gap-2 text-base"
             disabled={isPending}
             onClick={() => {
               onOpenChange(false);
@@ -117,7 +127,7 @@ export function TransactionDetailDialog({
           </Button>
           <Button
             variant="destructive"
-            className="flex-1"
+            className="h-11 flex-1 gap-2 text-base"
             disabled={isPending}
             onClick={() => {
               onOpenChange(false);

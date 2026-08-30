@@ -1,7 +1,13 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Wallet, TrendingUp, TrendingDown, Banknote, Landmark } from "lucide-react";
+import {
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  Banknote,
+  Landmark,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -44,22 +50,35 @@ export function SummaryCards({
       icon: TrendingDown,
       tone: "text-rose-600 dark:text-rose-400",
     },
-    { label: "Cash", value: cashBalance, icon: Banknote, tone: "text-foreground" },
-    { label: "Bank", value: bankBalance, icon: Landmark, tone: "text-foreground" },
+    {
+      label: "Cash",
+      value: cashBalance,
+      icon: Banknote,
+      tone: "text-foreground",
+    },
+    {
+      label: "Bank",
+      value: bankBalance,
+      icon: Landmark,
+      tone: "text-foreground",
+    },
   ];
 
   return (
     <div className="flex flex-col gap-4">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
         <Card className="bg-primary text-primary-foreground">
-          <div className="flex items-center justify-between px-4">
-            <div>
+          <div className="flex items-center justify-between gap-3 px-4">
+            <div className="min-w-0">
               <p className="text-sm opacity-80">Total money left</p>
-              <p className="mt-1 text-3xl font-semibold tracking-tight">
+              <p className="mt-1 truncate text-3xl font-semibold tracking-tight">
                 {formatCurrency(netBalance)}
               </p>
             </div>
-            <span className="flex size-11 items-center justify-center rounded-full bg-primary-foreground/15">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-foreground/15">
               <Wallet className="size-5" />
             </span>
           </div>
@@ -80,15 +99,22 @@ export function SummaryCards({
                 <div className="flex items-center gap-3 px-4">
                   <span
                     className={cn(
-                      "flex size-9 items-center justify-center rounded-full bg-muted",
-                      card.tone
+                      "flex size-9 shrink-0 items-center justify-center rounded-full bg-muted",
+                      card.tone,
                     )}
                   >
                     <Icon className="size-4" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{card.label}</p>
-                    <p className={cn("truncate text-base font-semibold", card.tone)}>
+                    <p className="text-xs text-muted-foreground">
+                      {card.label}
+                    </p>
+                    <p
+                      className={cn(
+                        "truncate text-base font-semibold",
+                        card.tone,
+                      )}
+                    >
                       {formatCurrency(card.value)}
                     </p>
                   </div>

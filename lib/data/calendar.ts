@@ -17,7 +17,11 @@ function monthRange(year: number, month: number) {
   return { start, end };
 }
 
-export async function getMonthCalendarData(userId: string, year: number, month: number) {
+export async function getMonthCalendarData(
+  userId: string,
+  year: number,
+  month: number,
+) {
   const { start, end } = monthRange(year, month);
 
   const transactions = await prisma.transaction.findMany({
@@ -57,7 +61,11 @@ export async function getMonthCalendarData(userId: string, year: number, month: 
   return { days, monthIncome, monthExpense };
 }
 
-export async function getPreviousMonthBalance(userId: string, year: number, month: number) {
+export async function getPreviousMonthBalance(
+  userId: string,
+  year: number,
+  month: number,
+) {
   const prevMonth = month === 1 ? 12 : month - 1;
   const prevYear = month === 1 ? year - 1 : year;
   const { start, end } = monthRange(prevYear, prevMonth);
@@ -68,8 +76,12 @@ export async function getPreviousMonthBalance(userId: string, year: number, mont
     _sum: { amount: true },
   });
 
-  const income = Number(rows.find((r) => r.type === "INCOME")?._sum.amount ?? 0);
-  const expense = Number(rows.find((r) => r.type === "EXPENSE")?._sum.amount ?? 0);
+  const income = Number(
+    rows.find((r) => r.type === "INCOME")?._sum.amount ?? 0,
+  );
+  const expense = Number(
+    rows.find((r) => r.type === "EXPENSE")?._sum.amount ?? 0,
+  );
 
   return income - expense;
 }

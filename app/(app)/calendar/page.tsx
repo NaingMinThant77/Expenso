@@ -52,7 +52,7 @@ export default async function CalendarPage({ searchParams }: Props) {
           <CalendarDays className="size-4" />
           Daily income &amp; expense calendar
         </div>
-        <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 text-sm">
+        {/* <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 text-sm">
           <span className="text-muted-foreground">Previous month :</span>
           <span
             className={cn(
@@ -64,7 +64,7 @@ export default async function CalendarPage({ searchParams }: Props) {
           >
             {formatCurrency(previousBalance)}
           </span>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex flex-col gap-3">

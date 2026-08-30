@@ -23,7 +23,7 @@ export function LogoutButton() {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="w-full justify-start gap-2.5 border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors sm:w-auto"
+          className="justify-start gap-2.5 border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
         >
           <span className="flex size-7 items-center justify-center rounded-full bg-destructive/10">
             <LogOut className="size-3.5" />
@@ -42,7 +42,7 @@ export function LogoutButton() {
             dashboard.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="flex-row justify-end">
           <Button
             variant="outline"
             onClick={() => setOpen(false)}
