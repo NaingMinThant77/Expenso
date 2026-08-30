@@ -8,6 +8,7 @@ import { ProfileForm } from "@/components/settings/profile-form";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { LogoutButton } from "@/components/settings/logout-button";
 import { OfflineStatusCard } from "@/components/settings/offline-status-card";
+import { PushReminderToggle } from "@/components/settings/push-reminder-toggle";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -51,6 +52,8 @@ export default async function SettingsPage() {
         </div>
         <ChevronRight className="size-4 text-muted-foreground" />
       </Link>
+
+      <PushReminderToggle />
 
       <OfflineStatusCard />
 
