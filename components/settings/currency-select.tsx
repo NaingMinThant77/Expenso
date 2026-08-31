@@ -22,8 +22,9 @@ export function CurrencySelect() {
   return (
     <div className="flex items-center justify-between gap-3">
       <div>
-        <p className="text-sm font-medium">Currency</p>
-        <p className="text-xs text-muted-foreground">Used to display amounts across the app</p>
+        <p className="text-xs text-muted-foreground">
+          Used to display amounts across the app
+        </p>
       </div>
       <Select value={currency} onValueChange={handleChange}>
         <SelectTrigger className="w-44">
