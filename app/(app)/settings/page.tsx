@@ -57,7 +57,7 @@ export default async function SettingsPage() {
         <div className="flex-1">
           <p className="text-sm font-medium">Categories</p>
           <p className="text-xs text-muted-foreground">
-            Manage income and expense categories
+            Manage expense and income categories
           </p>
         </div>
         <ChevronRight className="size-4 text-muted-foreground" />
