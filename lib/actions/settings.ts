@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { profileSchema } from "@/lib/validations/settings";
+import { profileSchema, currencySchema } from "@/lib/validations/settings";
 
 export async function updateProfile(input: unknown) {
   const session = await auth();
@@ -30,5 +30,21 @@ export async function updateProfile(input: unknown) {
 
   revalidatePath("/settings");
   revalidatePath("/");
+  return { success: true };
+}
+
+export async function updateCurrency(currency: string) {
+  const session = await auth();
+  if (!session?.user) return { error: "Not authenticated" };
+
+  const parsed = currencySchema.safeParse({ currency });
+  if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { currency: parsed.data.currency },
+  });
+
+  revalidatePath("/settings");
   return { success: true };
 }

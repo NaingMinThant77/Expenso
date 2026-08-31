@@ -5,7 +5,7 @@ import { useForm, Controller, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
 import { format } from "date-fns";
-import { CalendarIcon, Loader2, Banknote, Landmark } from "lucide-react";
+import { CalendarIcon, Clock, Loader2, Banknote, Landmark, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,10 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CategoryForm } from "@/components/settings/category-form";
 import { cn } from "@/lib/utils";
 import { getIcon } from "@/lib/icon-map";
 import { transactionSchema, type TransactionInput } from "@/lib/validations/transaction";
 import { useOffline } from "@/context/offline-context";
+import { useCurrency } from "@/context/currency-context";
 import type { Category } from "@prisma/client";
 
 type Props = {
@@ -44,7 +46,10 @@ type Props = {
 
 export function TransactionForm({ categories, transaction, defaultDate, onSuccess }: Props) {
   const [isPending, startTransition] = useTransition();
+  const [newCategoryOpen, setNewCategoryOpen] = useState(false);
+  const [localCategories, setLocalCategories] = useState<Category[]>([]);
   const { createTransaction, updateTransaction } = useOffline();
+  const { symbol } = useCurrency();
 
   const {
     control,
@@ -72,9 +77,14 @@ export function TransactionForm({ categories, transaction, defaultDate, onSucces
   const method = watch("method");
   const categoryId = watch("categoryId");
 
+  const allCategories = useMemo(() => {
+    const knownIds = new Set(categories.map((c) => c.id));
+    return [...categories, ...localCategories.filter((c) => !knownIds.has(c.id))];
+  }, [categories, localCategories]);
+
   const filteredCategories = useMemo(
-    () => categories.filter((c) => c.type === type),
-    [categories, type]
+    () => allCategories.filter((c) => c.type === type),
+    [allCategories, type]
   );
 
   useEffect(() => {
@@ -83,15 +93,27 @@ export function TransactionForm({ categories, transaction, defaultDate, onSucces
     }
   }, [type, filteredCategories, categoryId, setValue]);
 
+  function handleCategoryCreated(category: Category) {
+    setLocalCategories((prev) => [...prev, category]);
+    setValue("type", category.type);
+    setValue("categoryId", category.id);
+  }
+
   function onSubmit(values: TransactionInput) {
     startTransition(async () => {
-      // Store the calendar day the user picked (in their local timezone) as a
-      // timezone-agnostic UTC-midnight instant, so server-side day bucketing
-      // (which reads with getUTC*) always lands on the same day.
+      // Store the calendar day (and time) the user picked, in their local timezone, as a
+      // timezone-agnostic UTC instant, so server-side day bucketing (which reads with
+      // getUTC*) always lands on the same day regardless of the server's own timezone.
       const normalized = {
         ...values,
         date: new Date(
-          Date.UTC(values.date.getFullYear(), values.date.getMonth(), values.date.getDate())
+          Date.UTC(
+            values.date.getFullYear(),
+            values.date.getMonth(),
+            values.date.getDate(),
+            values.date.getHours(),
+            values.date.getMinutes()
+          )
         ),
       };
       const result = transaction
@@ -139,7 +161,7 @@ export function TransactionForm({ categories, transaction, defaultDate, onSucces
         <Label htmlFor="amount">Amount</Label>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-            $
+            {symbol}
           </span>
           <Input
             id="amount"
@@ -186,7 +208,19 @@ export function TransactionForm({ categories, transaction, defaultDate, onSucces
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>Category</Label>
+        <div className="flex items-center justify-between">
+          <Label>Category</Label>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-auto gap-1 px-2 py-1 text-xs text-primary hover:text-primary"
+            onClick={() => setNewCategoryOpen(true)}
+          >
+            <Plus className="size-3.5" />
+            New
+          </Button>
+        </div>
         <Controller
           control={control}
           name="categoryId"
@@ -217,36 +251,73 @@ export function TransactionForm({ categories, transaction, defaultDate, onSucces
         {errors.categoryId && (
           <p className="text-xs text-destructive">{errors.categoryId.message}</p>
         )}
+        <CategoryForm
+          trigger={null}
+          open={newCategoryOpen}
+          onOpenChange={setNewCategoryOpen}
+          defaultType={type}
+          onCreated={handleCategoryCreated}
+        />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>Date</Label>
-        <Controller
-          control={control}
-          name="date"
-          render={({ field }) => (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full justify-start font-normal"
-                >
-                  <CalendarIcon className="size-4" />
-                  {field.value ? format(field.value, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  onSelect={(d) => d && field.onChange(d)}
-                  autoFocus
+        <Label>Date &amp; time</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <Controller
+            control={control}
+            name="date"
+            render={({ field }) => (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-10 justify-start truncate rounded-full font-normal"
+                  >
+                    <CalendarIcon className="size-4 shrink-0" />
+                    <span className="truncate">
+                      {field.value ? format(field.value, "PP") : "Pick a date"}
+                    </span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={(d) => {
+                      if (!d) return;
+                      const next = new Date(d);
+                      if (field.value) next.setHours(field.value.getHours(), field.value.getMinutes());
+                      field.onChange(next);
+                    }}
+                    autoFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+          />
+          <Controller
+            control={control}
+            name="date"
+            render={({ field }) => (
+              <div className="relative">
+                <Clock className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="time"
+                  className="pl-10 dark:[&::-webkit-calendar-picker-indicator]:invert"
+                  value={field.value ? format(field.value, "HH:mm") : ""}
+                  onChange={(e) => {
+                    const [hours, minutes] = e.target.value.split(":").map(Number);
+                    if (Number.isNaN(hours) || Number.isNaN(minutes)) return;
+                    const next = new Date(field.value ?? new Date());
+                    next.setHours(hours, minutes, 0, 0);
+                    field.onChange(next);
+                  }}
                 />
-              </PopoverContent>
-            </Popover>
-          )}
-        />
+              </div>
+            )}
+          />
+        </div>
       </div>
 
       <div className="flex flex-col gap-1.5">

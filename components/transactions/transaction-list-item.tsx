@@ -25,9 +25,9 @@ import { Button } from "@/components/ui/button";
 import { TransactionDialog } from "./transaction-dialog";
 import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { getIcon } from "@/lib/icon-map";
-import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useOffline } from "@/context/offline-context";
+import { useCurrency } from "@/context/currency-context";
 import type { Category } from "@prisma/client";
 import type { SerializedTransaction } from "@/lib/data/transactions";
 
@@ -42,6 +42,7 @@ export function TransactionListItem({ transaction, categories }: Props) {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { deleteTransaction } = useOffline();
+  const { format: formatMoney } = useCurrency();
   const Icon = getIcon(transaction.category.icon);
   const isExpense = transaction.type === "EXPENSE";
 
@@ -92,7 +93,7 @@ export function TransactionListItem({ transaction, categories }: Props) {
             {transaction.shop || transaction.category.name}
           </p>
           <p className="truncate text-xs text-muted-foreground">
-            {transaction.category.name} · {format(transaction.date, "MMM d, yyyy")}
+            {transaction.category.name} · {format(transaction.date, "MMM d, yyyy · h:mm a")}
           </p>
           {transaction.memo && (
             <p
@@ -113,7 +114,7 @@ export function TransactionListItem({ transaction, categories }: Props) {
           )}
         >
           {isExpense ? "-" : "+"}
-          {formatCurrency(Number(transaction.amount))}
+          {formatMoney(Number(transaction.amount))}
         </p>
       </div>
 

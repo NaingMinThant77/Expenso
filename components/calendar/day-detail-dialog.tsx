@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { TransactionDialog } from "@/components/transactions/transaction-dialog";
 import { getIcon } from "@/lib/icon-map";
-import { formatCurrency } from "@/lib/format";
+import { useCurrency } from "@/context/currency-context";
 import { cn } from "@/lib/utils";
 import type { Category } from "@prisma/client";
 import type { SerializedTransaction } from "@/lib/data/transactions";
@@ -25,8 +25,23 @@ type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
-export function DayDetailDialog({ date, transactions, categories, open, onOpenChange }: Props) {
+export function DayDetailDialog({
+  date,
+  transactions,
+  categories,
+  open,
+  onOpenChange,
+}: Props) {
   const [addOpen, setAddOpen] = useState(false);
+  const { format } = useCurrency();
+
+  const totalIncome = transactions
+    .filter((t) => t.type === "INCOME")
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+  const totalExpense = transactions
+    .filter((t) => t.type === "EXPENSE")
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+  const net = totalIncome - totalExpense;
 
   return (
     <>
@@ -48,6 +63,35 @@ export function DayDetailDialog({ date, transactions, categories, open, onOpenCh
             </DialogDescription>
           </DialogHeader>
 
+          {transactions.length > 0 && (
+            <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 px-3.5 py-2.5 text-sm">
+              <span className="text-muted-foreground font-bold">Total: </span>
+              <div className="flex items-center gap-3">
+                {totalIncome > 0 && totalExpense > 0 && (
+                  <>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                      +{format(totalIncome)}
+                    </span>
+                    <span className="font-medium text-rose-600 dark:text-rose-400">
+                      -{format(totalExpense)}
+                    </span>
+                  </>
+                )}
+                <span
+                  className={cn(
+                    "font-semibold",
+                    net >= 0
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-rose-600 dark:text-rose-400",
+                  )}
+                >
+                  {net >= 0 ? "+" : "-"}
+                  {format(Math.abs(net))}
+                </span>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col gap-2">
             {transactions.map((t) => {
               const Icon = getIcon(t.category.icon);
@@ -59,24 +103,31 @@ export function DayDetailDialog({ date, transactions, categories, open, onOpenCh
                 >
                   <span
                     className="flex size-9 shrink-0 items-center justify-center rounded-full"
-                    style={{ backgroundColor: `${t.category.color}1a`, color: t.category.color }}
+                    style={{
+                      backgroundColor: `${t.category.color}1a`,
+                      color: t.category.color,
+                    }}
                   >
                     <Icon className="size-4" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{t.shop || t.category.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">{t.category.name}</p>
+                    <p className="truncate text-sm font-medium">
+                      {t.shop || t.category.name}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {t.category.name}
+                    </p>
                   </div>
                   <p
                     className={cn(
                       "shrink-0 text-sm font-semibold",
                       isExpense
                         ? "text-rose-600 dark:text-rose-400"
-                        : "text-emerald-600 dark:text-emerald-400"
+                        : "text-emerald-600 dark:text-emerald-400",
                     )}
                   >
                     {isExpense ? "-" : "+"}
-                    {formatCurrency(t.amount)}
+                    {format(t.amount)}
                   </p>
                 </div>
               );

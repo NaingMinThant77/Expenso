@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
+import { CurrencySelect } from "@/components/settings/currency-select";
 import { LogoutButton } from "@/components/settings/logout-button";
 import { OfflineStatusCard } from "@/components/settings/offline-status-card";
 import { PushReminderToggle } from "@/components/settings/push-reminder-toggle";
@@ -34,6 +35,15 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent>
           <ThemeToggle />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Currency</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CurrencySelect />
         </CardContent>
       </Card>
 

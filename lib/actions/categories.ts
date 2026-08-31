@@ -13,8 +13,9 @@ export async function createCategory(input: unknown) {
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
+  let created;
   try {
-    await prisma.category.create({
+    created = await prisma.category.create({
       data: { ...parsed.data, userId: session.user.id },
     });
   } catch (error) {
@@ -27,7 +28,9 @@ export async function createCategory(input: unknown) {
   revalidatePath("/settings");
   revalidatePath("/settings/categories");
   revalidatePath("/transactions");
-  return { success: true };
+  revalidatePath("/");
+  revalidatePath("/calendar");
+  return { success: true, data: created };
 }
 
 export async function updateCategory(id: string, input: unknown) {

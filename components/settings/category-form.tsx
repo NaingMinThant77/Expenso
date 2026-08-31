@@ -41,13 +41,22 @@ type Props = {
   trigger?: ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  defaultType?: "INCOME" | "EXPENSE";
+  onCreated?: (category: Category) => void;
 };
 
 function toIconKey(icon: string): IconKey {
   return (ICON_KEYS as readonly string[]).includes(icon) ? (icon as IconKey) : ICON_KEYS[0];
 }
 
-export function CategoryForm({ category, trigger, open, onOpenChange }: Props) {
+export function CategoryForm({
+  category,
+  trigger,
+  open,
+  onOpenChange,
+  defaultType = "EXPENSE",
+  onCreated,
+}: Props) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = open !== undefined;
   const isOpen = isControlled ? open : internalOpen;
@@ -70,7 +79,7 @@ export function CategoryForm({ category, trigger, open, onOpenChange }: Props) {
           icon: toIconKey(category.icon),
           color: category.color,
         }
-      : { name: "", type: "EXPENSE", icon: ICON_KEYS[0], color: PRESET_COLORS[0] },
+      : { name: "", type: defaultType, icon: ICON_KEYS[0], color: PRESET_COLORS[0] },
   });
 
   useEffect(() => {
@@ -83,26 +92,29 @@ export function CategoryForm({ category, trigger, open, onOpenChange }: Props) {
           icon: toIconKey(category.icon),
           color: category.color,
         }
-          : { name: "", type: "EXPENSE", icon: ICON_KEYS[0], color: PRESET_COLORS[0] }
+          : { name: "", type: defaultType, icon: ICON_KEYS[0], color: PRESET_COLORS[0] }
       );
     }
-  }, [isOpen, category, reset]);
+  }, [isOpen, category, defaultType, reset]);
+
+  function showError(error: string | { name?: string[] }) {
+    toast.error(typeof error === "string" ? error : error.name?.[0] ?? "Something went wrong");
+  }
 
   function onSubmit(values: CategoryInput) {
     startTransition(async () => {
-      const result = category
-        ? await updateCategory(category.id, values)
-        : await createCategory(values);
-
-      if (result?.error) {
-        const message =
-          typeof result.error === "string"
-            ? result.error
-            : result.error.name?.[0] ?? "Something went wrong";
-        toast.error(message);
+      if (category) {
+        const result = await updateCategory(category.id, values);
+        if (result?.error) return showError(result.error);
+        toast.success("Category updated");
+        setOpen(false);
         return;
       }
-      toast.success(category ? "Category updated" : "Category created");
+
+      const result = await createCategory(values);
+      if (result?.error) return showError(result.error);
+      toast.success("Category created");
+      if (result.data) onCreated?.(result.data);
       setOpen(false);
     });
   }

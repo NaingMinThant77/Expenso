@@ -1,4 +1,6 @@
-import { formatCurrency } from "@/lib/format";
+"use client";
+
+import { useCurrency } from "@/context/currency-context";
 import type { MonthlyTrendPoint } from "@/lib/data/reports";
 
 const HEIGHT = 200;
@@ -18,6 +20,7 @@ function niceMax(value: number) {
 }
 
 export function IncomeExpenseChart({ points }: { points: MonthlyTrendPoint[] }) {
+  const { format } = useCurrency();
   const rawMax = Math.max(...points.map((p) => Math.max(p.income, p.expense)), 0);
   const max = niceMax(rawMax || 100);
   const ticks = [0, max * 0.25, max * 0.5, max * 0.75, max];
@@ -93,7 +96,7 @@ export function IncomeExpenseChart({ points }: { points: MonthlyTrendPoint[] }) 
                   rx={4}
                   className="fill-emerald-500"
                 >
-                  <title>{`${point.label}: Income ${formatCurrency(point.income)}`}</title>
+                  <title>{`${point.label}: Income ${format(point.income)}`}</title>
                 </rect>
                 <rect
                   x={groupX + BAR_WIDTH + BAR_GAP}
@@ -103,7 +106,7 @@ export function IncomeExpenseChart({ points }: { points: MonthlyTrendPoint[] }) 
                   rx={4}
                   className="fill-rose-500"
                 >
-                  <title>{`${point.label}: Expense ${formatCurrency(point.expense)}`}</title>
+                  <title>{`${point.label}: Expense ${format(point.expense)}`}</title>
                 </rect>
                 <text
                   x={groupX + BAR_WIDTH + BAR_GAP / 2}

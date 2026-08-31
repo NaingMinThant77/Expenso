@@ -12,8 +12,9 @@ type Props = {
 
 export function BottomTabBar({ onAddTransaction }: Props) {
   const pathname = usePathname();
-  const [first, second] = NAV_ITEMS;
-  const rest = NAV_ITEMS.slice(2);
+  const mid = Math.ceil(NAV_ITEMS.length / 2);
+  const left = NAV_ITEMS.slice(0, mid);
+  const right = NAV_ITEMS.slice(mid);
 
   return (
     <nav
@@ -21,8 +22,9 @@ export function BottomTabBar({ onAddTransaction }: Props) {
       aria-label="Primary"
     >
       <div className="flex items-center gap-1 rounded-full border border-border bg-card/95 px-2 py-2 shadow-jelly backdrop-blur">
-        <TabLink item={first} isActive={pathname === first.href} />
-        <TabLink item={second} isActive={pathname === second.href} />
+        {left.map((item) => (
+          <TabLink key={item.href} item={item} isActive={pathname === item.href} />
+        ))}
 
         <motion.button
           type="button"
@@ -35,7 +37,7 @@ export function BottomTabBar({ onAddTransaction }: Props) {
           <Plus className="size-5" />
         </motion.button>
 
-        {rest.map((item) => (
+        {right.map((item) => (
           <TabLink key={item.href} item={item} isActive={pathname === item.href} />
         ))}
       </div>

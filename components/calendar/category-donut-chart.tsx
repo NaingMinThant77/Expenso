@@ -1,11 +1,15 @@
+"use client";
+
 import { getIcon } from "@/lib/icon-map";
-import { formatCurrency } from "@/lib/format";
+import { useCurrency } from "@/context/currency-context";
 import type { CategorySlice } from "@/lib/data/reports";
 
 const MAX_SLICES = 6;
 const OTHER_COLOR = "#6b7280";
 
 export function CategoryDonutChart({ slices }: { slices: CategorySlice[] }) {
+  const { format } = useCurrency();
+
   if (slices.length === 0) {
     return (
       <div className="flex h-full min-h-56 flex-col items-center justify-center rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
@@ -45,7 +49,7 @@ export function CategoryDonutChart({ slices }: { slices: CategorySlice[] }) {
   const total = slices.reduce((sum, s) => sum + s.total, 0);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center">
+    <div className="flex min-w-0 flex-col gap-4 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center">
       <div className="relative mx-auto size-40 shrink-0">
         <div
           className="size-full rounded-full"
@@ -53,11 +57,11 @@ export function CategoryDonutChart({ slices }: { slices: CategorySlice[] }) {
         />
         <div className="absolute inset-[18%] flex flex-col items-center justify-center rounded-full bg-card text-center">
           <span className="text-xs text-muted-foreground">Total</span>
-          <span className="text-sm font-semibold">{formatCurrency(total)}</span>
+          <span className="text-sm font-semibold">{format(total)}</span>
         </div>
       </div>
 
-      <div className="flex-1 space-y-1.5">
+      <div className="min-w-0 flex-1 space-y-1.5">
         {legendSlices.map((slice) => {
           const Icon = getIcon(slice.icon);
           return (
@@ -70,8 +74,8 @@ export function CategoryDonutChart({ slices }: { slices: CategorySlice[] }) {
               </span>
               <span className="min-w-0 flex-1 truncate">{slice.name}</span>
               <span className="shrink-0 text-muted-foreground">{slice.percent.toFixed(0)}%</span>
-              <span className="w-20 shrink-0 text-right font-medium">
-                {formatCurrency(slice.total)}
+              <span className="shrink-0 whitespace-nowrap text-right font-medium">
+                {format(slice.total)}
               </span>
             </div>
           );

@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/format";
+import { useCurrency } from "@/context/currency-context";
 
 const MONTH_LABELS = [
   "January", "February", "March", "April", "May", "June",
@@ -21,6 +21,7 @@ export function MonthNav({ year, month, monthIncome, monthExpense }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { format } = useCurrency();
 
   function go(deltaMonths: number) {
     const d = new Date(year, month - 1 + deltaMonths, 1);
@@ -47,11 +48,11 @@ export function MonthNav({ year, month, monthIncome, monthExpense }: Props) {
       <div className="flex items-center gap-2">
         <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
           <ArrowUpRight className="size-3.5" />
-          {formatCurrency(monthIncome)}
+          {format(monthIncome)}
         </span>
         <span className="flex items-center gap-1 rounded-full bg-rose-500/10 px-3 py-1.5 text-sm font-semibold text-rose-600 dark:text-rose-400">
           <ArrowDownRight className="size-3.5" />
-          {formatCurrency(monthExpense)}
+          {format(monthExpense)}
         </span>
       </div>
     </div>

@@ -21,6 +21,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       email={user.email}
       image={user.image}
       categories={categories}
+      currency={user.currency}
     >
       {children}
     </AppShell>

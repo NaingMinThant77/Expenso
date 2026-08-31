@@ -1,4 +1,11 @@
 import { z } from "zod";
+import { isCurrencyCode } from "@/lib/currency";
+
+export const currencySchema = z.object({
+  currency: z.string().refine(isCurrencyCode, "Unsupported currency"),
+});
+
+export type CurrencyInput = z.infer<typeof currencySchema>;
 
 export const profileSchema = z.object({
   username: z

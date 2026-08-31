@@ -9,7 +9,7 @@ import {
   Landmark,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/format";
+import { useCurrency } from "@/context/currency-context";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -37,6 +37,7 @@ export function SummaryCards({
   bankBalance,
   netBalance,
 }: Props) {
+  const { format } = useCurrency();
   const cards = [
     {
       label: "Income",
@@ -75,7 +76,7 @@ export function SummaryCards({
             <div className="min-w-0">
               <p className="text-sm opacity-80">Total money left</p>
               <p className="mt-1 truncate text-3xl font-semibold tracking-tight">
-                {formatCurrency(netBalance)}
+                {format(netBalance)}
               </p>
             </div>
             <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-foreground/15">
@@ -115,7 +116,7 @@ export function SummaryCards({
                         card.tone,
                       )}
                     >
-                      {formatCurrency(card.value)}
+                      {format(card.value)}
                     </p>
                   </div>
                 </div>

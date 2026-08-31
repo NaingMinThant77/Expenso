@@ -17,7 +17,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/format";
+import { useCurrency } from "@/context/currency-context";
 import { cn } from "@/lib/utils";
 import type { SerializedTransaction } from "@/lib/data/transactions";
 
@@ -40,6 +40,7 @@ export function TransactionDetailDialog({
   onDelete,
   isPending,
 }: Props) {
+  const { format: formatMoney } = useCurrency();
   const isExpense = transaction.type === "EXPENSE";
   const MethodIcon = transaction.method === "BANK" ? Landmark : Banknote;
 
@@ -70,7 +71,7 @@ export function TransactionDetailDialog({
               )}
             >
               {isExpense ? "-" : "+"}
-              {formatCurrency(Number(transaction.amount))}
+              {formatMoney(Number(transaction.amount))}
             </span>
           </DialogDescription>
         </DialogHeader>
@@ -84,6 +85,12 @@ export function TransactionDetailDialog({
             <span className="text-muted-foreground">Date</span>
             <span className="font-medium">
               {format(transaction.date, "PPP")}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-muted-foreground">Time</span>
+            <span className="font-medium">
+              {format(transaction.date, "h:mm a")}
             </span>
           </div>
           <div className="flex items-center justify-between gap-3">

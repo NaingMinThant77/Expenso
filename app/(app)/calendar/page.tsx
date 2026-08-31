@@ -91,11 +91,11 @@ export default async function CalendarPage({ searchParams }: Props) {
           Category breakdown &amp; trends
         </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="flex flex-col gap-2">
+          <div className="flex min-w-0 flex-col gap-2">
             <h2 className="text-sm font-semibold">Category Distribution</h2>
             <CategoryDonutChart slices={categoryBreakdown} />
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex min-w-0 flex-col gap-2">
             <h2 className="text-sm font-semibold">Income vs Expenses</h2>
             <IncomeExpenseChart points={trend} />
           </div>

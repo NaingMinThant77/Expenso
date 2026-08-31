@@ -10,6 +10,17 @@ import { getIcon } from "@/lib/icon-map";
 import { deleteCategory } from "@/lib/actions/categories";
 import { CategoryForm } from "@/components/settings/category-form";
 import type { Category } from "@prisma/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type Props = {
   categories: Category[];
@@ -20,7 +31,6 @@ export function CategoryManagementList({ categories }: Props) {
   const [editing, setEditing] = useState<Category | null>(null);
 
   function handleDelete(id: string) {
-    if (!window.confirm("Delete this category?")) return;
     startTransition(async () => {
       const result = await deleteCategory(id);
       if (result?.error) {
@@ -54,7 +64,7 @@ export function CategoryManagementList({ categories }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {categories.map((category) => {
         const Icon = getIcon(category.icon);
         return (
@@ -87,14 +97,35 @@ export function CategoryManagementList({ categories }: Props) {
               >
                 <Pencil className="size-3.5" />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                disabled={isPending}
-                onClick={() => handleDelete(category.id)}
-              >
-                <Trash2 className="size-3.5" />
-              </Button>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="icon-sm" disabled={isPending}>
+                    <Trash2 className="size-3.5" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete the category{" "}
+                      <span className="font-semibold text-foreground">
+                        {category.name}
+                      </span>
+                      . This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleDelete(category.id)}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         );

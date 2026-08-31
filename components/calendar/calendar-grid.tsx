@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { formatCurrency } from "@/lib/format";
+import { useCurrency } from "@/context/currency-context";
 import { DayDetailDialog } from "./day-detail-dialog";
 import type { CalendarDay } from "@/lib/data/calendar";
 import type { Category } from "@prisma/client";
@@ -19,6 +19,7 @@ type Props = {
 
 export function CalendarGrid({ year, month, days, categories }: Props) {
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
+  const { format } = useCurrency();
 
   const firstWeekday = new Date(year, month - 1, 1).getDay();
   const leadingBlanks = Array.from({ length: firstWeekday }, (_, i) => i);
@@ -105,12 +106,12 @@ export function CalendarGrid({ year, month, days, categories }: Props) {
                   <div className="pointer-events-none absolute left-1/2 top-full z-20 hidden -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-xl border border-border bg-popover px-2.5 py-1.5 text-xs shadow-jelly-sm group-hover:block">
                     {day.incomeCount > 0 && (
                       <p className="text-emerald-600 dark:text-emerald-400">
-                        +{formatCurrency(day.income)}
+                        +{format(day.income)}
                       </p>
                     )}
                     {day.expenseCount > 0 && (
                       <p className="text-rose-600 dark:text-rose-400">
-                        -{formatCurrency(day.expense)}
+                        -{format(day.expense)}
                       </p>
                     )}
                   </div>
