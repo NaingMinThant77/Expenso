@@ -34,7 +34,7 @@ export function CurrencySelect() {
           {CURRENCIES.map((c) => (
             <SelectItem key={c.code} value={c.code}>
               <span className="font-medium">{c.symbol}</span>
-              {c.code} · {c.name}
+              {c.code}
             </SelectItem>
           ))}
         </SelectContent>

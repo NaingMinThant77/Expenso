@@ -20,6 +20,7 @@ import { ShoppingListDetailDialog } from "./shopping-list-detail-dialog";
 import { useCurrency } from "@/context/currency-context";
 import { deleteShoppingList } from "@/lib/actions/shopping";
 import type { SerializedShoppingList } from "@/lib/data/shopping";
+import { format as dateFnsFormat } from "date-fns";
 
 type Props = {
   lists: SerializedShoppingList[];
@@ -28,7 +29,8 @@ type Props = {
 export function ShoppingListsView({ lists }: Props) {
   const [localLists, setLocalLists] = useState<SerializedShoppingList[]>([]);
   const [openListId, setOpenListId] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<SerializedShoppingList | null>(null);
+  const [deleteTarget, setDeleteTarget] =
+    useState<SerializedShoppingList | null>(null);
   const [isPending, startTransition] = useTransition();
   const { format } = useCurrency();
 
@@ -49,7 +51,11 @@ export function ShoppingListsView({ lists }: Props) {
     startTransition(async () => {
       const result = await deleteShoppingList(deleteTarget.id);
       if (result?.error) {
-        toast.error(typeof result.error === "string" ? result.error : "Couldn't delete list");
+        toast.error(
+          typeof result.error === "string"
+            ? result.error
+            : "Couldn't delete list",
+        );
         return;
       }
       setLocalLists((prev) => prev.filter((l) => l.id !== deleteTarget.id));
@@ -93,10 +99,14 @@ export function ShoppingListsView({ lists }: Props) {
                     <ListChecks className="size-4" />
                   </span>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{list.name}</p>
+                    <p className="truncate text-sm font-semibold">
+                      {list.name} -{" "}
+                      {dateFnsFormat(list.createdAt, "MMM d, yyyy")}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      {list.items.length} item{list.items.length === 1 ? "" : "s"} ·{" "}
-                      {checkedCount} checked
+                      {list.items.length} item
+                      {list.items.length === 1 ? "" : "s"} · {checkedCount}{" "}
+                      checked
                     </p>
                   </div>
                 </div>
@@ -115,7 +125,11 @@ export function ShoppingListsView({ lists }: Props) {
                 <span className="font-semibold">{format(checkedTotal)}</span>
               </div>
 
-              <Button variant="outline" className="w-full" onClick={() => setOpenListId(list.id)}>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setOpenListId(list.id)}
+              >
                 Open list
               </Button>
             </div>
@@ -131,18 +145,25 @@ export function ShoppingListsView({ lists }: Props) {
         />
       )}
 
-      <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this shopping list?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete &quot;{deleteTarget?.name}&quot; and all of its items.
-              This action can&apos;t be undone.
+              This will permanently delete &quot;{deleteTarget?.name}&quot; and
+              all of its items. This action can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" disabled={isPending} onClick={confirmDelete}>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isPending}
+              onClick={confirmDelete}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

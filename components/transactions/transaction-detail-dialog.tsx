@@ -119,7 +119,7 @@ export function TransactionDetailDialog({
           </div>
         )}
 
-        <DialogFooter>
+        <DialogFooter className="flex flex-row items-center justify-between gap-2">
           <Button
             variant="outline"
             className="h-11 flex-1 gap-2 text-base"

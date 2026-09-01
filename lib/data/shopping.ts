@@ -15,7 +15,9 @@ export type SerializedShoppingList = {
   items: SerializedShoppingListItem[];
 };
 
-export async function getShoppingListsForUser(userId: string): Promise<SerializedShoppingList[]> {
+export async function getShoppingListsForUser(
+  userId: string,
+): Promise<SerializedShoppingList[]> {
   const lists = await prisma.shoppingList.findMany({
     where: { userId },
     include: { items: { orderBy: { position: "asc" } } },
