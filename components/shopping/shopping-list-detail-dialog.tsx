@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useCurrency } from "@/context/currency-context";
 import { saveShoppingListItems } from "@/lib/actions/shopping";
 import type { SerializedShoppingList } from "@/lib/data/shopping";
+import { format as dateFnsFormat } from "date-fns";
 
 type ItemRow = {
   id?: string;
@@ -51,9 +52,11 @@ export function ShoppingListDetailDialog({ list, open, onOpenChange }: Props) {
   const [isPending, startTransition] = useTransition();
   const { format, symbol } = useCurrency();
 
-  const { control, register, handleSubmit, watch, reset } = useForm<FormValues>({
-    defaultValues: { items: toFormItems(list) },
-  });
+  const { control, register, handleSubmit, watch, reset } = useForm<FormValues>(
+    {
+      defaultValues: { items: toFormItems(list) },
+    },
+  );
 
   const { fields, append, remove } = useFieldArray({ control, name: "items" });
 
@@ -64,7 +67,7 @@ export function ShoppingListDetailDialog({ list, open, onOpenChange }: Props) {
   const items = watch("items");
   const total = items.reduce(
     (sum, item) => sum + (item.checked ? Number(item.amount) || 0 : 0),
-    0
+    0,
   );
 
   function onSubmit(values: FormValues) {
@@ -80,7 +83,11 @@ export function ShoppingListDetailDialog({ list, open, onOpenChange }: Props) {
     startTransition(async () => {
       const result = await saveShoppingListItems(list.id, { items: cleaned });
       if (result?.error) {
-        toast.error(typeof result.error === "string" ? result.error : "Couldn't save the list");
+        toast.error(
+          typeof result.error === "string"
+            ? result.error
+            : "Couldn't save the list",
+        );
         return;
       }
       toast.success("Shopping list saved");
@@ -91,12 +98,24 @@ export function ShoppingListDetailDialog({ list, open, onOpenChange }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] gap-5 overflow-y-auto p-6 sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{list.name}</DialogTitle>
-          <DialogDescription>Add items, check them off, and track the total.</DialogDescription>
+        <DialogHeader className="min-w-0">
+          <DialogTitle className="flex flex-col gap-1.5 min-w-0 pr-6">
+            <span className="shrink-0 text-muted-foreground font-bold text-base">
+              {dateFnsFormat(list.createdAt, "MMM d, yyyy")}
+            </span>
+            <span className="min-w-0 truncate" title={list.name}>
+              {list.name}
+            </span>
+          </DialogTitle>
+          <DialogDescription>
+            Add items, check them off, and track the total.
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex min-w-0 flex-col gap-4"
+        >
           <div className="flex flex-col gap-2">
             {fields.map((field, index) => (
               <div key={field.id} className="flex items-center gap-2">
@@ -106,7 +125,9 @@ export function ShoppingListDetailDialog({ list, open, onOpenChange }: Props) {
                   render={({ field: checkedField }) => (
                     <Checkbox
                       checked={checkedField.value}
-                      onCheckedChange={(value) => checkedField.onChange(value === true)}
+                      onCheckedChange={(value) =>
+                        checkedField.onChange(value === true)
+                      }
                     />
                   )}
                 />
@@ -157,7 +178,11 @@ export function ShoppingListDetailDialog({ list, open, onOpenChange }: Props) {
           </div>
 
           <DialogFooter>
-            <Button type="submit" disabled={isPending} className="h-11 w-full text-base">
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="h-11 w-full text-base"
+            >
               {isPending && <Loader2 className="size-4 animate-spin" />}
               Save
             </Button>

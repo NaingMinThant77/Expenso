@@ -91,23 +91,29 @@ export function ShoppingListsView({ lists }: Props) {
           return (
             <div
               key={list.id}
-              className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4"
+              className="flex min-w-0 flex-col gap-3 rounded-2xl border border-border bg-card p-4"
             >
               <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <ListChecks className="size-4" />
+                <div className="flex min-w-0 flex-col gap-2">
+                  <span className="shrink-0 text-muted-foreground text-sm">
+                    {dateFnsFormat(list.createdAt, "MMM d, yyyy")}
                   </span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">
-                      {list.name} -{" "}
-                      {dateFnsFormat(list.createdAt, "MMM d, yyyy")}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {list.items.length} item
-                      {list.items.length === 1 ? "" : "s"} · {checkedCount}{" "}
-                      checked
-                    </p>
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <ListChecks className="size-4" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold" title={list.name}>
+                        <span className="block min-w-0 truncate">
+                          {list.name}
+                        </span>
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {list.items.length} item
+                        {list.items.length === 1 ? "" : "s"} · {checkedCount}{" "}
+                        checked
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <Button
