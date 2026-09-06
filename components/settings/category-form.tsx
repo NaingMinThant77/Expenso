@@ -140,7 +140,13 @@ export function CategoryForm({
               : "Create a custom income or expense category."}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form
+          onSubmit={(e) => {
+            e.stopPropagation();
+            handleSubmit(onSubmit)(e);
+          }}
+          className="flex flex-col gap-4"
+        >
           <Controller
             control={control}
             name="type"
