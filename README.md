@@ -40,7 +40,7 @@ How Expenso does this:
 - **Calendar** — month view showing each day's activity, a day-detail dialog, an income-vs-expense chart and a category donut chart.
 - **Shopping lists** — create lists with items and amounts, tick items off.
 - **Multi-currency** — choose your currency (MMK default, plus USD, EUR, GBP, JPY, THB, SGD, INR, CNY, KRW, AUD, MYR).
-- **Authentication** — register/login with username, email and password (bcrypt-hashed). Google sign-in is built in but currently commented out in the login/register forms.
+- **Authentication** — register/login with username, email and password (bcrypt-hashed). 
 - **Profile settings** — edit profile, upload avatar, dark/light theme toggle, logout.
 - **Offline-first** — transactions can be created/edited/deleted with no internet. Changes are stored on the device (IndexedDB) in an "outbox" and synced automatically when the connection returns. See [lib/offline/](lib/offline/) and [context/offline-context.tsx](context/offline-context.tsx).
 - **Daily push reminder** — opt in from Settings; a Vercel Cron job sends a "log today's spending" notification every day.
@@ -57,7 +57,7 @@ How Expenso does this:
 | Styling / UI | **Tailwind CSS v4**, **shadcn/ui** + Radix UI, lucide-react icons, Motion (animations), Sonner (toasts), next-themes |
 | Forms / validation | React Hook Form + **Zod** |
 | Database | **PostgreSQL** with **Prisma** ORM (schema and migrations in [prisma/](prisma/)) |
-| Auth | **Auth.js (next-auth v5)** with Prisma adapter, credentials + Google provider, bcryptjs |
+| Auth | **Auth.js (next-auth v5)** with Prisma adapter, credentials +  bcryptjs |
 | PWA | `@ducanh2912/next-pwa` (Workbox), Web App Manifest |
 | Offline storage | IndexedDB via `idb` |
 | Push notifications | Web Push API with VAPID keys (`web-push`) |
