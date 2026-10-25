@@ -16,11 +16,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { GoogleButton } from "@/components/auth/google-button";
+// import { Separator } from "@/components/ui/separator";
+// import { GoogleButton } from "@/components/auth/google-button";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { registerAction } from "./actions";
-import { googleSignInAction } from "../login/actions";
+// import { googleSignInAction } from "../login/actions";
 
 export function RegisterForm() {
   const [isPending, startTransition] = useTransition();
@@ -60,12 +60,14 @@ export function RegisterForm() {
           <CardDescription>Start tracking your income and expenses.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
+          {/* Google OAuth disabled
           <GoogleButton action={googleSignInAction} />
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Separator className="flex-1" />
             or
             <Separator className="flex-1" />
           </div>
+          */}
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="username">Username</Label>
