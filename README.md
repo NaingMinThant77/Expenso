@@ -102,10 +102,6 @@ DATABASE_URL=postgresql://user:password@host:5432/dbname
 # Auth.js secret — generate with: npx auth secret   (or: openssl rand -base64 32)
 AUTH_SECRET=
 
-# Google OAuth (only needed if you re-enable Google sign-in)
-AUTH_GOOGLE_ID=
-AUTH_GOOGLE_SECRET=
-
 # Web Push — generate with: npx web-push generate-vapid-keys
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
