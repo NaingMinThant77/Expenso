@@ -32,6 +32,23 @@ How Expenso does this:
 
 ---
 
+## Screenshots
+
+| | | |
+| --- | --- | --- |
+| ![PWA app icon](docs/screenshots/1-PWA-app-icon.jpg) | ![Splash screen](docs/screenshots/2-SplashScreen.jpg) | ![Sign up](docs/screenshots/3-SignUp.jpg) |
+| PWA app icon | Splash screen | Sign up |
+| ![Log in](docs/screenshots/4-LogIn.jpg) | ![Home page](docs/screenshots/5-HomePage.jpg) | ![Expense detail popup](docs/screenshots/6-ExpenseDetailPopup.jpg) |
+| Log in | Home page | Expense detail popup |
+| ![Transaction page](docs/screenshots/7-TransactionPage.jpg) | ![Shopping list page](docs/screenshots/8-ShoppingListPage.jpg) | ![Create new](docs/screenshots/9-createNew.jpg) |
+| Transaction page | Shopping list page | Create new (transaction/category) |
+| ![Statistics](docs/screenshots/10-Statistics.jpg) | ![Statistics 2](docs/screenshots/11-Statistic-2.jpg) | ![Profile](docs/screenshots/12-Profile.jpg) |
+| Statistics | Statistics (category breakdown) | Profile |
+| ![Profile 2](docs/screenshots/13-Profile-2.jpg) | ![Create new category](docs/screenshots/14-CreateNewCategory.jpg) | |
+| Profile (theme/settings) | Create new category | |
+
+---
+
 ## Features
 
 - **Dashboard** — summary cards (income, expense, balance) and recent transactions.
